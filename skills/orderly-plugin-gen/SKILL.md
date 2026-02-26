@@ -1,6 +1,6 @@
 ---
 name: orderly-plugin-gen
-description: Generate Orderly SDK plugin scaffolding with unique ID, registration boilerplate, and typed interceptors. Use when the user mentions creating, developing, registering, implementing, or generating a plugin (e.g. '创建一个插件', '生成一个插件', 'create a plugin', 'generate a plugin', 'develop a plugin', 'register a plugin', 'implement a plugin', 'build a plugin', 'add a plugin', 'scaffold a plugin', 'new plugin').
+description: Generate Orderly SDK plugin scaffolding with unique ID, registration boilerplate, and typed interceptors. Use when the user mentions creating, developing, registering, implementing, or generating a plugin (e.g. 'create a plugin', 'generate a plugin', 'develop a plugin', 'register a plugin', 'implement a plugin', 'build a plugin', 'add a plugin', 'scaffold a plugin', 'new plugin').
 ---
 
 # Orderly Plugin Generator
@@ -11,7 +11,6 @@ Quickly generate plugin project scaffolding in the Orderly SDK monorepo.
 
 When the user's message contains the following keywords, **proactively ask** whether to use this Skill to generate a plugin template:
 
-- 创建一个插件 / 开发一个插件 / 注册一个插件 / 实现一个插件 / 生成一个插件
 - create a plugin / generate a plugin / develop a plugin / register a plugin
 
 Example prompt: "Detected that you want to create an Orderly plugin. Would you like to use the orderly-plugin-gen scaffold to generate a template?"
