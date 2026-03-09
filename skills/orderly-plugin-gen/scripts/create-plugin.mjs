@@ -61,7 +61,7 @@ if (!NAME_RE.test(pluginName)) {
 
 const dryRun = args["dry-run"] ?? false;
 const parentDir = resolve(args.path);
-const dirName = `plugin-${pluginName}`;
+const dirName = `${pluginName}`;
 const pluginDir = join(parentDir, dirName);
 const pkgScope = "@orderly.network";
 const pkgName = `${pkgScope}/${pluginName}-plugin`;
