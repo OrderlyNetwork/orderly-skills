@@ -147,7 +147,6 @@ function makePackageJson(versions) {
         "@types/react-dom": "^18.2.17",
         react: "^18.2.0",
         "react-dom": "^18.2.0",
-        tsconfig: "workspace:*",
         tsup: "^8.5.1",
         typescript: "^5.1.6",
       },
