@@ -8,6 +8,7 @@
  *
  * Usage:
  *   node create-plugin.mjs --name <name> --type <widget|page|layout> --path <parent-dir>
+ *   node create-plugin.mjs ... --offline   # skip npm fetch, use "latest" for all orderly packages
  */
 
 import { createHash, randomBytes } from "node:crypto";
@@ -25,6 +26,7 @@ const { values: args } = parseArgs({
     type: { type: "string", default: "widget" },
     path: { type: "string" },
     "dry-run": { type: "boolean", default: false },
+    offline: { type: "boolean", default: false },
   },
   strict: true,
 });
@@ -48,7 +50,7 @@ if (!VALID_TYPES.includes(pluginType)) {
 }
 
 const NAME_RE = /^[a-z][a-z0-9-]*$/;
-const pluginName = args.name.toLowerCase();
+const pluginName = args.name.toLowerCase().replace(/_/g, "-");
 
 if (!NAME_RE.test(pluginName)) {
   console.error(
@@ -62,7 +64,7 @@ const parentDir = resolve(args.path);
 const dirName = `plugin-${pluginName}`;
 const pluginDir = join(parentDir, dirName);
 const pkgScope = "@orderly.network";
-const pkgName = `${pkgScope}/plugin-${pluginName}`;
+const pkgName = `${pkgScope}/${pluginName}-plugin`;
 
 // ---------------------------------------------------------------------------
 // Generate unique plugin ID
@@ -77,10 +79,50 @@ function generatePluginId(name) {
 const pluginId = generatePluginId(pluginName);
 
 // ---------------------------------------------------------------------------
+// Resolve @orderly.network package versions from npm
+// ---------------------------------------------------------------------------
+
+const NPM_REGISTRY = "https://registry.npmjs.org";
+
+const ORDERLY_PACKAGES = [
+  "@orderly.network/plugin-core",
+  "@orderly.network/hooks",
+  "@orderly.network/i18n",
+  "@orderly.network/types",
+  "@orderly.network/ui",
+];
+
+async function fetchLatestVersion(packageName) {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(`${NPM_REGISTRY}/${packageName}/latest`, {
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.version ?? null;
+  } catch {
+    return null;
+  }
+}
+
+async function resolveOrderlyVersions() {
+  const results = await Promise.all(
+    ORDERLY_PACKAGES.map(async (pkg) => {
+      const v = await fetchLatestVersion(pkg);
+      return [pkg, v ?? "latest"];
+    })
+  );
+  return Object.fromEntries(results);
+}
+
+// ---------------------------------------------------------------------------
 // Template: package.json
 // ---------------------------------------------------------------------------
 
-function makePackageJson() {
+function makePackageJson(versions) {
   return JSON.stringify(
     {
       name: pkgName,
@@ -97,9 +139,7 @@ function makePackageJson() {
       peerDependencies: {
         react: ">=18",
         "react-dom": ">=18",
-        "@orderly.network/plugin-core": "workspace:*",
-        "@orderly.network/ui": "workspace:*",
-        "@orderly.network/hooks": "workspace:*",
+        ...versions,
       },
       dependencies: {},
       devDependencies: {
@@ -114,6 +154,7 @@ function makePackageJson() {
       publishConfig: {
         access: "public",
       },
+      
     },
     null,
     2
@@ -127,13 +168,29 @@ function makePackageJson() {
 function makeTsconfig() {
   return JSON.stringify(
     {
-      extends: "../tsconfig/base.json",
+      $schema: "https://json.schemastore.org/tsconfig",
+      display: "Default",
       compilerOptions: {
+        composite: false,
+        declaration: true,
+        declarationMap: true,
+        esModuleInterop: true,
+        forceConsistentCasingInFileNames: true,
+        inlineSources: false,
+        isolatedModules: true,
+        moduleResolution: "node",
+        noUnusedLocals: false,
+        noUnusedParameters: false,
+        preserveWatchOutput: true,
+        skipLibCheck: true,
+        target: "ES2020",
+        strict: true,
         outDir: "dist",
         rootDir: "src",
         jsx: "react-jsx",
       },
       include: ["src"],
+      exclude: ["node_modules"],
     },
     null,
     2
@@ -427,8 +484,21 @@ const COMPONENT_FN_MAP = {
 
 const componentFileName = COMPONENT_FILE_MAP[pluginType];
 
+// ---------------------------------------------------------------------------
+// Execute
+// ---------------------------------------------------------------------------
+
+if (existsSync(pluginDir)) {
+  console.error(`Error: directory already exists — ${pluginDir}`);
+  process.exit(1);
+}
+
+const versions = args.offline
+  ? Object.fromEntries(ORDERLY_PACKAGES.map((p) => [p, "latest"]))
+  : await resolveOrderlyVersions();
+
 const files = [
-  { rel: "package.json", content: makePackageJson() },
+  { rel: "package.json", content: makePackageJson(versions) },
   { rel: "tsconfig.json", content: makeTsconfig() },
   { rel: "tsup.config.ts", content: makeTsupConfig() },
   { rel: "src/index.tsx", content: INDEX_FN_MAP[pluginType]() },
@@ -438,15 +508,6 @@ const files = [
   },
   { rel: "src/components/.gitkeep", content: "" },
 ];
-
-// ---------------------------------------------------------------------------
-// Execute
-// ---------------------------------------------------------------------------
-
-if (existsSync(pluginDir)) {
-  console.error(`Error: directory already exists — ${pluginDir}`);
-  process.exit(1);
-}
 
 console.log(`\n  Plugin Name : ${pluginName}`);
 console.log(`  Plugin Type : ${pluginType}`);
