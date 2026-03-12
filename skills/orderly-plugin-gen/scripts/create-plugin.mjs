@@ -128,14 +128,17 @@ function makePackageJson(versions) {
       name: pkgName,
       version: "0.1.0",
       description: `Orderly SDK plugin — ${pluginName}`,
+      license: "MIT",
       main: "dist/index.js",
       module: "dist/index.mjs",
       types: "dist/index.d.ts",
       scripts: {
-        build: "tsup",
+        build: "tsup && pnpm run build:css",
+        "build:css": "tailwindcss build -i src/tailwind.css -o dist/styles.css --minify",
         dev: "tsup --watch",
+        prepublishOnly: "pnpm build",
       },
-      files: ["dist"],
+      files: ["dist", "package.json", "README.md"],
       peerDependencies: {
         react: ">=18",
         "react-dom": ">=18",
@@ -147,13 +150,14 @@ function makePackageJson(versions) {
         "@types/react-dom": "^18.2.17",
         react: "^18.2.0",
         "react-dom": "^18.2.0",
+        tailwindcss: "^3.4.4",
+        "tailwindcss-animate": "^1.0.6",
         tsup: "^8.5.1",
         typescript: "^5.1.6",
       },
       publishConfig: {
         access: "public",
       },
-      
     },
     null,
     2
@@ -161,14 +165,23 @@ function makePackageJson(versions) {
 }
 
 // ---------------------------------------------------------------------------
-// Template: tsconfig.json
+// Template: tsconfig.json & tsconfig.build.json
 // ---------------------------------------------------------------------------
 
 function makeTsconfig() {
   return JSON.stringify(
     {
       $schema: "https://json.schemastore.org/tsconfig",
-      display: "Default",
+      extends: "./tsconfig.build.json",
+    },
+    null,
+    2
+  );
+}
+
+function makeTsconfigBuild() {
+  return JSON.stringify(
+    {
       compilerOptions: {
         composite: false,
         declaration: true,
@@ -177,6 +190,7 @@ function makeTsconfig() {
         forceConsistentCasingInFileNames: true,
         inlineSources: false,
         isolatedModules: true,
+        module: "esnext",
         moduleResolution: "node",
         noUnusedLocals: false,
         noUnusedParameters: false,
@@ -188,8 +202,16 @@ function makeTsconfig() {
         rootDir: "src",
         jsx: "react-jsx",
       },
-      include: ["src"],
-      exclude: ["node_modules"],
+      include: ["./src/**/*.ts", "./src/**/*.tsx"],
+      exclude: [
+        "dist",
+        "node_modules",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.spec.ts",
+        "**/*.spec.tsx",
+        "**/*.stories.tsx",
+      ],
     },
     null,
     2
@@ -205,13 +227,14 @@ function makeTsupConfig() {
 
 export default defineConfig((options) => ({
   entry: ["src/index.tsx"],
-  splitting: false,
-  format: ["cjs", "esm"],
-  target: "es6",
+  format: ["esm", "cjs"],
+  target: "es2020",
+  splitting: true,
+  treeshake: true,
   sourcemap: true,
   clean: !options.watch,
   dts: true,
-  tsconfig: "tsconfig.json",
+  tsconfig: "tsconfig.build.json",
   external: [
     "react",
     "react-dom",
@@ -220,7 +243,164 @@ export default defineConfig((options) => ({
     "@orderly.network/ui",
     "@orderly.network/trading",
   ],
+  esbuildOptions(esOptions, context) {
+    if (!options.watch) {
+      esOptions.drop = ["console", "debugger"];
+    }
+  },
 }));
+`;
+}
+
+// ---------------------------------------------------------------------------
+// Template: .gitignore, README.md, Tailwind, .gitlab-ci.yml
+// ---------------------------------------------------------------------------
+
+function makeGitignore() {
+  return `# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+dist
+dist-ssr
+*.local
+
+# dependencies
+node_modules
+
+
+dist/
+lib/
+esm/
+
+.vscode
+.idea
+.DS_Store
+
+.npmrc
+`;
+}
+
+function makeReadme() {
+  const regFn = `register${pascalCase(pluginName)}Plugin`;
+  return `# ${pkgName}
+
+Orderly SDK **${pluginType}** plugin — ${pluginName}.
+
+## Peer dependencies
+
+- \`react\` >= 18, \`react-dom\` >= 18
+- \`@orderly.network/plugin-core\`, \`@orderly.network/hooks\`, \`@orderly.network/i18n\`, \`@orderly.network/types\`, \`@orderly.network/ui\`
+
+## Usage
+
+\`\`\`tsx
+import { ${regFn} } from "${pkgName}";
+
+<OrderlyProvider plugins={[${regFn}()]}>
+  ...
+</OrderlyProvider>
+\`\`\`
+
+## Build
+
+\`\`\`bash
+pnpm build
+\`\`\`
+
+Runs \`tsup\` (JS/TS) and \`build:css\` (Tailwind → \`dist/styles.css\`).
+
+## i18n
+
+Export \`${pascalCase(pluginName)}PluginLocaleProvider\` for plugin-level locales. Add or edit JSON under \`src/i18n/locales/\`.
+`;
+}
+
+function makeTailwindConfig() {
+  return `/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./src/**/*.{ts,tsx,js,jsx}"],
+  presets: [require("@orderly.network/ui/tailwind.config.js")],
+};
+`;
+}
+
+function makeTailwindCss() {
+  return `/* @tailwind base; */
+@tailwind components;
+@tailwind utilities;
+`;
+}
+
+function makeGitlabCi() {
+  return `include:
+  - project: "orderlynetwork/orderly-fe/js-sdks/common-ci"
+    ref: main
+    file: "/npm-release.yml"
+`;
+}
+
+// ---------------------------------------------------------------------------
+// Template: src/i18n
+// ---------------------------------------------------------------------------
+
+function makeI18nModule() {
+  const localesName = `${pascalCase(pluginName)}PluginLocales`;
+  const typeName = `T${pascalCase(pluginName)}PluginLocales`;
+  return `export const ${localesName} = {
+  "common.ok": "OK",
+};
+
+export type ${typeName} = typeof ${localesName};
+`;
+}
+
+function makeI18nProvider() {
+  const localesName = `${pascalCase(pluginName)}PluginLocales`;
+  const typeName = `T${pascalCase(pluginName)}PluginLocales`;
+  const providerName = `${pascalCase(pluginName)}PluginLocaleProvider`;
+  return `import { FC, PropsWithChildren } from "react";
+import {
+  preloadDefaultResource,
+  ExternalLocaleProvider,
+  LocaleCode,
+} from "@orderly.network/i18n";
+import { ${localesName}, ${typeName} } from "./module";
+
+preloadDefaultResource(${localesName});
+
+const resources = (lang: LocaleCode) => {
+  return import(\`./locales/\${lang}.json\`).then(
+    (res) => res.default as ${typeName}
+  );
+};
+
+export const ${providerName}: FC<PropsWithChildren> = (props) => {
+  return (
+    <ExternalLocaleProvider resources={resources}>
+      {props.children}
+    </ExternalLocaleProvider>
+  );
+};
+`;
+}
+
+function makeI18nIndex() {
+  const providerName = `${pascalCase(pluginName)}PluginLocaleProvider`;
+  return `export { ${providerName} } from "./provider";
+`;
+}
+
+function makeI18nLocaleEn() {
+  return `{
+  "common.ok": "OK"
+}
 `;
 }
 
@@ -290,6 +470,7 @@ export function ${fnName}(options?: ${pascalCase(pluginName)}PluginOptions) {
   };
 }
 
+export { ${pascalCase(pluginName)}PluginLocaleProvider } from "./i18n";
 export default ${fnName};
 `;
 }
@@ -332,6 +513,7 @@ export function ${fnName}(options?: ${pascalCase(pluginName)}PluginOptions) {
 
 /** Export the page component for host router integration */
 export { ${componentName} } from "./components/${componentFile}";
+export { ${pascalCase(pluginName)}PluginLocaleProvider } from "./i18n";
 export default ${fnName};
 `;
 }
@@ -384,6 +566,7 @@ export function ${fnName}(options?: ${pascalCase(pluginName)}PluginOptions) {
   };
 }
 
+export { ${pascalCase(pluginName)}PluginLocaleProvider } from "./i18n";
 export default ${fnName};
 `;
 }
@@ -395,6 +578,7 @@ export default ${fnName};
 function makeWidgetComponent() {
   const componentName = `${pascalCase(pluginName)}Widget`;
   return `import React from "react";
+import { Box } from "@orderly.network/ui";
 
 export interface ${componentName}Props {
   className?: string;
@@ -402,10 +586,10 @@ export interface ${componentName}Props {
 
 export const ${componentName}: React.FC<${componentName}Props> = ({ className }) => {
   return (
-    <div className={className}>
+    <Box className={className}>
       {/* TODO: Implement your widget UI here */}
       <p>${pascalCase(pluginName)} Widget</p>
-    </div>
+    </Box>
   );
 };
 `;
@@ -414,6 +598,7 @@ export const ${componentName}: React.FC<${componentName}Props> = ({ className })
 function makePageComponent() {
   const componentName = `${pascalCase(pluginName)}Page`;
   return `import React from "react";
+import { Box } from "@orderly.network/ui";
 
 export interface ${componentName}Props {
   className?: string;
@@ -422,14 +607,14 @@ export interface ${componentName}Props {
 /**
  * Standalone page component.
  * Mount this via the host application's router.
- * You can use @orderly-network/hooks directly here.
+ * You can use @orderly.network/hooks directly here.
  */
 export const ${componentName}: React.FC<${componentName}Props> = ({ className }) => {
   return (
-    <div className={className}>
+    <Box className={className}>
       {/* TODO: Implement your page UI here */}
       <h1>${pascalCase(pluginName)}</h1>
-    </div>
+    </Box>
   );
 };
 `;
@@ -438,6 +623,7 @@ export const ${componentName}: React.FC<${componentName}Props> = ({ className })
 function makeLayoutComponent() {
   const componentName = `${pascalCase(pluginName)}Layout`;
   return `import React from "react";
+import { Box } from "@orderly.network/ui";
 
 export interface ${componentName}Props {
   className?: string;
@@ -450,10 +636,10 @@ export interface ${componentName}Props {
  */
 export const ${componentName}: React.FC<${componentName}Props> = ({ className, children }) => {
   return (
-    <div className={className}>
+    <Box className={className}>
       {/* TODO: Rearrange child blocks as needed */}
       {children}
-    </div>
+    </Box>
   );
 };
 `;
@@ -499,13 +685,23 @@ const versions = args.offline
 const files = [
   { rel: "package.json", content: makePackageJson(versions) },
   { rel: "tsconfig.json", content: makeTsconfig() },
+  { rel: "tsconfig.build.json", content: makeTsconfigBuild() },
   { rel: "tsup.config.ts", content: makeTsupConfig() },
+  { rel: ".gitignore", content: makeGitignore() },
+  { rel: "README.md", content: makeReadme() },
+  { rel: ".gitlab-ci.yml", content: makeGitlabCi() },
+  { rel: "tailwind.config.cjs", content: makeTailwindConfig() },
+  { rel: "src/tailwind.css", content: makeTailwindCss() },
   { rel: "src/index.tsx", content: INDEX_FN_MAP[pluginType]() },
   {
     rel: `src/components/${componentFileName}.tsx`,
     content: COMPONENT_FN_MAP[pluginType](),
   },
   { rel: "src/components/.gitkeep", content: "" },
+  { rel: "src/i18n/module.ts", content: makeI18nModule() },
+  { rel: "src/i18n/provider.tsx", content: makeI18nProvider() },
+  { rel: "src/i18n/index.ts", content: makeI18nIndex() },
+  { rel: "src/i18n/locales/en.json", content: makeI18nLocaleEn() },
 ];
 
 console.log(`\n  Plugin Name : ${pluginName}`);
