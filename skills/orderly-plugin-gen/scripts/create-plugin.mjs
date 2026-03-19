@@ -289,36 +289,84 @@ esm/
 
 function makeReadme() {
   const regFn = `register${pascalCase(pluginName)}Plugin`;
+  const displayName = pascalCase(pluginName);
+  const featuresIntro =
+    pluginType === "widget"
+      ? `A **${pluginType}** plugin for the Orderly SDK. Injects custom UI into the trading view via interceptors.`
+      : pluginType === "page"
+        ? `A **${pluginType}** plugin for the Orderly SDK. Provides a standalone page component to mount via your host router.`
+        : `A **${pluginType}** plugin for the Orderly SDK. Intercepts the trading layout to rearrange or wrap child blocks.`;
+
+  const optionsTable =
+    pluginType === "widget"
+      ? `| Option       | Type     | Required | Description                          |
+|-------------|----------|----------|--------------------------------------|
+| \`className\` | \`string\` | No       | Optional CSS class for the wrapper.  |`
+      : pluginType === "page"
+        ? `| Option   | Type     | Required | Description              |
+|----------|----------|----------|--------------------------|
+| \`title\`  | \`string\` | No       | Optional page title.     |`
+        : `| Option       | Type     | Required | Description                          |
+|-------------|----------|----------|--------------------------------------|
+| \`className\` | \`string\` | No       | Optional CSS class for the layout.   |`;
+
   return `# ${pkgName}
 
-Orderly SDK **${pluginType}** plugin — ${pluginName}.
+${featuresIntro} Supports i18n via \`@orderly.network/i18n\` and \`${displayName}PluginLocaleProvider\`.
 
-## Peer dependencies
+## Features
 
-- \`react\` >= 18, \`react-dom\` >= 18
-- \`@orderly.network/plugin-core\`, \`@orderly.network/hooks\`, \`@orderly.network/i18n\`, \`@orderly.network/types\`, \`@orderly.network/ui\`
+- **${displayName}** — ${pluginType} integration with Orderly SDK.
+- **i18n** — Export \`${displayName}PluginLocaleProvider\` and add locales under \`src/i18n/locales/\`.
+- **Build** — \`tsup\` (JS/TS) and Tailwind → \`dist/styles.css\`.
 
-## Usage
+## Quick Start
+
+### Installation
+
+\`\`\`bash
+npm install ${pkgName}
+# or
+pnpm add ${pkgName}
+# or
+yarn add ${pkgName}
+\`\`\`
+
+### Register the Plugin
 
 \`\`\`tsx
 import { ${regFn} } from "${pkgName}";
 
-<OrderlyProvider plugins={[${regFn}()]}>
-  ...
+const plugins = [
+  ${regFn}({
+    // optional options — see Options table below
+  }),
+];
+\`\`\`
+
+Pass the \`plugins\` array to \`OrderlyProvider\` (or \`OrderlyAppProvider\`):
+
+\`\`\`tsx
+<OrderlyProvider plugins={plugins} configStore={configStore}>
+  {children}
 </OrderlyProvider>
 \`\`\`
 
-## Build
+### Options
 
-\`\`\`bash
-pnpm build
-\`\`\`
+${optionsTable}
 
-Runs \`tsup\` (JS/TS) and \`build:css\` (Tailwind → \`dist/styles.css\`).
+### Peer Dependencies
 
-## i18n
+This plugin requires the following Orderly SDK packages:
 
-Export \`${pascalCase(pluginName)}PluginLocaleProvider\` for plugin-level locales. Add or edit JSON under \`src/i18n/locales/\`.
+- \`@orderly.network/hooks\`
+- \`@orderly.network/plugin-core\`
+- \`@orderly.network/i18n\`
+- \`@orderly.network/types\`
+- \`@orderly.network/ui\`
+- \`react\` >= 18
+- \`react-dom\` >= 18
 `;
 }
 
