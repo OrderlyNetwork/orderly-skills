@@ -6,10 +6,10 @@ Agent skills for Orderly plugin workflows (create, submit to Marketplace, add to
 
 | Directory | `name` (frontmatter) | Purpose |
 |-----------|----------------------|---------|
-| [skills/orderly-plugin-create](skills/orderly-plugin-create) | `orderly-plugin-create` | `orderly create plugin` (CLI scaffold) |
+| [skills/orderly-plugin-create](skills/orderly-plugin-create) | `orderly-plugin-create` | `orderly-devkit create plugin` (CLI scaffold) |
 | [skills/orderly-plugin-write](skills/orderly-plugin-write) | `orderly-plugin-write` | Write plugin code: interceptors, hooks, lifecycle, patterns |
 | [skills/orderly-plugin-add](skills/orderly-plugin-add) | `orderly-plugin-add` | Wire plugin into host (`OrderlyAppProvider` / workspace) |
-| [skills/orderly-plugin-submit](skills/orderly-plugin-submit) | `orderly-plugin-submit` | README (optional), `usagePrompt` + confirm, `orderly submit` |
+| [skills/orderly-plugin-submit](skills/orderly-plugin-submit) | `orderly-plugin-submit` | README (optional), `usagePrompt` + confirm, `orderly-devkit submit` |
 
 Shared reference: [skills/_shared/orderly-plugin-reference.md](skills/_shared/orderly-plugin-reference.md).
 
@@ -42,7 +42,7 @@ npx skills add https://github.com/<owner>/<repo>/tree/main/skills/orderly-plugin
 
 ## CLI package
 
-Skills assume [`@orderly.network/cli`](https://www.npmjs.com/package/@orderly.network/cli) (`orderly` binary) for create/submit flows.
+Skills assume [`@orderly.network/devkit`](https://www.npmjs.com/package/@orderly.network/devkit) (`orderly-devkit` binary) for create/submit flows.
 
 ## Legacy
 
