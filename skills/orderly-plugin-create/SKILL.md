@@ -1,6 +1,6 @@
 ---
 name: orderly-plugin-create
-description: Use when the user wants to scaffold / generate a new Orderly plugin project via the official `@orderly.network/cli` or `orderly` CLI. Triggers on "create Orderly plugin", "new Orderly plugin", "scaffold plugin", "generate plugin", "orderly create plugin".
+description: Use when the user wants to scaffold / generate a new Orderly plugin project via the official `@orderly.network/cli` or `orderly-devkit` CLI. Triggers on "create Orderly plugin", "new Orderly plugin", "scaffold plugin", "generate plugin", "orderly-devkit create plugin".
 ---
 
 # Orderly plugin — create (CLI)
@@ -15,7 +15,7 @@ Scaffold a new plugin package using **`@orderly.network/cli`** (the official tem
 ## Prerequisites
 
 - Node.js >= 20.19.0
-- CLI: `npx orderly` (preferred if repo depends on CLI) or `npx @orderly.network/cli`
+- CLI: `npx orderly-devkit` (preferred if repo depends on CLI) or `npx @orderly.network/cli`
 
 ## Inputs to collect
 
@@ -50,7 +50,7 @@ Ask for these if missing. **For naming validation rules, see [reference.md § Na
 ## Step 1 — Check CLI options
 
 ```bash
-npx orderly create plugin --help
+npx orderly-devkit create plugin --help
 ```
 
 Or:
@@ -75,7 +75,7 @@ Interceptor: <interceptor-target>
 Run from the parent directory (where the plugin folder should be created):
 
 ```bash
-npx orderly create plugin \
+npx orderly-devkit create plugin \
   --name "<PluginName>" \
   --id "<plugin-id>" \
   --interceptor "<InterceptorTarget>" \
@@ -85,7 +85,7 @@ npx orderly create plugin \
 Or with pnpm:
 
 ```bash
-pnpm orderly create plugin \
+pnpm orderly-devkit create plugin \
   --name "<PluginName>" \
   --id "<plugin-id>" \
   --interceptor "<InterceptorTarget>" \

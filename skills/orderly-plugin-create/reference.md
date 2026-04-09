@@ -56,7 +56,7 @@ These are derived internally by the CLI — not passed as flags:
 
 ## Interceptor Targets (`--interceptor`)
 
-Valid values for `orderly create plugin --interceptor`:
+Valid values for `orderly-devkit create plugin --interceptor`:
 
 | Target | UI surface |
 |--------|------------|
