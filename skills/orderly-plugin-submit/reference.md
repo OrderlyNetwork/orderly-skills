@@ -9,9 +9,11 @@ Reference for preparing and submitting an Orderly plugin to the Marketplace. Use
 | `npmName` | Yes | npm package name (e.g. `@orderly.network/plugin-example`) |
 | `pluginId` | Yes | Stable ID (kebab-case), must match `registerPlugin` call |
 | `repoUrl` | Yes | HTTPS GitHub URL (e.g. `https://github.com/<owner>/<repo>`) |
-| `usagePrompt` | Yes | Integration instructions (max 8192 chars) |
+| `usagePrompt` | No (recommended) | Integration instructions (max 8192 chars) |
 | `tags` | No | Marketplace tags (max 5) |
 | `storybookUrl` | No | Storybook preview URL |
+| `storybookTooltip` | No | Tooltip text shown with Storybook link |
+| `coverImages` | No | Up to 10 items; each must be absolute URL or `/uploads/...` path |
 | `updatedAt` | Auto | ISO timestamp, set on each update |
 
 ## Valid Tags
@@ -30,7 +32,7 @@ Comma-separated list, max **5** tags:
 | `Tool` | Utilities, helpers |
 | `Widget` | Standalone widgets |
 
-## `usagePrompt` Guidelines
+## `usagePrompt` Guidelines (Recommended)
 
 `usagePrompt` is shown to AI assistants and developers integrating your plugin. It should explain **how to add the plugin to a host app**, not what the plugin does.
 
@@ -105,18 +107,25 @@ The README is for the GitHub repo, not uploaded to the API. Structure:
 
 ```bash
 # Dry run (validate only)
-orderly submit --path . --dry-run
+orderly-devkit submit --path . --dry-run
 
 # Actual submit
-orderly submit --path . [--tags "UI,Trading"] [--storybook-url "https://..."]
+orderly-devkit submit --path . [--tags "UI,Trading"] [--storybook-url "https://..."]
 ```
+
+Notes from current CLI:
+- `--tags` invalid values are warned and dropped (valid values only are kept).
+- `.orderly-manifest.json` is optional for submit; CLI can resolve from `package.json` + git remote, then prompt for missing `pluginId`.
+- Validation checks include npm name format, GitHub repo URL format, pluginId regex, max tags, coverImages constraints, and usagePrompt max length.
 
 ## Submit API Response
 
 | Status | Meaning |
 |:-------|:--------|
-| `200` | Success — plugin submitted for review |
+| `201` | Success — plugin submitted for review |
 | `400` | Validation error — fix fields and retry |
-| `401` | Not authenticated — run `orderly login` |
+| `401` | Not authenticated — run `orderly-devkit login` |
+| `404` | Resource not found — verify `npmName`/`repoUrl`/`pluginId` |
+| `409` | Plugin registration conflict — usually duplicate `pluginId` |
 
-On success, the API may return a `reviewStatus` field indicating if immediate publish or pending review.
+On success, API response includes plugin data like `id`, `npmName`, and `status` (often `under_review`).

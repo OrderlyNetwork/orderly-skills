@@ -51,14 +51,16 @@ Once found, open that file and confirm the current state of its `plugins` proper
 
 To integrate a plugin from the Marketplace (not a local/custom plugin), retrieve its metadata first:
 
+> `orderly-devkit view` does not require authentication and can be run directly.
+
 ```bash
-npx orderly view <pluginId>
+npx orderly-devkit view <pluginId>
 ```
 
 Or with pnpm:
 
 ```bash
-pnpm orderly view <pluginId>
+pnpm orderly-devkit view <pluginId>
 ```
 
 This returns the plugin's complete metadata, including:
@@ -86,7 +88,7 @@ After editing the manifest, run `pnpm install` from the workspace root.
 import registerMyPlugin from "@orderly.network/your-plugin";
 ```
 
-Prioritize using `usagePrompt` or `readme` to determine import path. If not available, check the plugin's `package.json` or `orderly view` output (`npm_package` field).
+Prioritize using `usagePrompt` or `readme` to determine import path. If not available, check the plugin's `package.json` or `orderly-devkit view` output (`npm_package` field).
 
 ### 5. **Core step**: Add plugin to OrderlyAppProvider's plugins array
 
