@@ -1,0 +1,60 @@
+{
+  "$schema": "https://orderly.network/schemas/skills/plugin-registry-v1.json",
+  "name": "orderly-skills",
+  "version": "1.0.0",
+  "skills": [
+    {
+      "id": "orderly-plugin-create",
+      "path": "skills/orderly-plugin-create/SKILL.md",
+      "dependsOnMcp": [],
+      "preconditions": [
+        "node>=20.19.0",
+        "cli_available:orderly-devkit_or_orderly-cli"
+      ]
+    },
+    {
+      "id": "orderly-plugin-write",
+      "path": "skills/orderly-plugin-write/SKILL.md",
+      "dependsOnMcp": [
+        {
+          "server": "orderly-sdk-docs",
+          "tools": [
+            "orderly_docs_search",
+            "orderly_docs_get_component",
+            "orderly_docs_get_hook",
+            "orderly_docs_get_type"
+          ]
+        }
+      ],
+      "preconditions": [
+        "sdk_docs_mcp_server_running_or_installable"
+      ]
+    },
+    {
+      "id": "orderly-plugin-add",
+      "path": "skills/orderly-plugin-add/SKILL.md",
+      "dependsOnMcp": [
+        {
+          "server": "orderly-sdk-docs",
+          "tools": [
+            "orderly_docs_get_component",
+            "orderly_docs_get_hook",
+            "orderly_docs_get_package_surface"
+          ]
+        }
+      ],
+      "preconditions": [
+        "host_uses_orderly_app_provider"
+      ]
+    },
+    {
+      "id": "orderly-plugin-submit",
+      "path": "skills/orderly-plugin-submit/SKILL.md",
+      "dependsOnMcp": [],
+      "preconditions": [
+        "orderly_devkit_login_required_for_submit",
+        "explicit_user_confirmation_required_before_submit"
+      ]
+    }
+  ]
+}

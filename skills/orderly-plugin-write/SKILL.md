@@ -12,7 +12,7 @@ Write plugin code after scaffolding. Covers architecture, interceptor strategies
 - User has scaffolded a plugin with **[orderly-plugin-create](../orderly-plugin-create/SKILL.md)** and wants to write the actual plugin code.
 - User wants to add or modify interceptors, hooks, lifecycle logic.
 
-## Two Core Principles
+## Three Core Principles
 
 1. **Direct SDK Package Usage**
    - Plugins can use `@orderly.network/hooks`, `@orderly.network/ui`, `@orderly.network/utils` directly — same as in host apps.
@@ -21,6 +21,11 @@ Write plugin code after scaffolding. Covers architecture, interceptor strategies
    - UI modifications use **interceptor pattern**, not traditional slots.
    - Use the **Inspector tool** to discover available target paths.
    - Specify a **component path** (e.g., `Trading.OrderEntry.SubmitButton`) to intercept.
+
+3. **Docs-First with Orderly docs MCP server**
+   - When writing plugin code, fetch API details from the **Orderly docs MCP server** first instead of guessing from memory.
+   - Prioritize tools like `orderly_docs_search`, `orderly_docs_get_hook`, `orderly_docs_get_component`, and `orderly_docs_get_type` to confirm signatures and usage.
+   - If examples are needed, use `orderly_docs_get_component_doc`, `orderly_docs_get_workflow`, or `orderly_docs_get_recipe`.
 
 ## Plugin Types
 

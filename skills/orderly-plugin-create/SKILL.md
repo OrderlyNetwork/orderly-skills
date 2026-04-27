@@ -30,22 +30,10 @@ Ask for these if missing. **For naming validation rules, see [reference.md § Na
 
 ### Supported `--interceptor` targets
 
-| Target | UI surface |
-|--------|------------|
-| `Trading.Layout.Desktop` | Desktop trading shell |
-| `Trading.Layout.Mobile` | Mobile trading shell |
-| `OrderBook.Desktop.Asks` | Ask side order book |
-| `OrderBook.Desktop.Bids` | Bid side order book |
-| `OrderBook.Desktop.MarkPrice` | Mark price row |
-| `Trading.PositionHeader` | Position header |
-| `Trading.DataList` | Positions / orders tables |
-| `Deposit.DepositForm` | Deposit form |
-| `Deposit.WithdrawForm` | Withdraw form |
-| `Account.AccountMenu` | Account menu |
-| `Layout.MainMenus` | Main navigation |
-| `Table.EmptyDataIdentifier` | Empty table state |
+For the canonical target list, see:
+- [shared interceptor targets](../_shared/orderly-plugin-reference.md#interceptor-targets)
 
-> **Tip**: Use the **Inspector tool** in your development environment to discover all available interceptor target paths.
+> **Tip**: Use the Inspector tool in your development environment to discover all available interceptor target paths.
 
 ## Step 1 — Check CLI options
 
@@ -123,4 +111,5 @@ Plugin created at: <path>/plugins/<plugin-id-kebab>
 
 ## Reference
 
-[reference.md](reference.md) — naming conventions, plugin structure, interceptor targets
+- [reference.md](reference.md) — create-command specific details (template variables, generated structure)
+- [shared reference](../_shared/orderly-plugin-reference.md) — naming rules, interceptor targets, and manifest constraints

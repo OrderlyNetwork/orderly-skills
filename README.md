@@ -12,6 +12,7 @@ Agent skills for Orderly plugin workflows (create, submit to Marketplace, add to
 | [skills/orderly-plugin-submit](skills/orderly-plugin-submit) | `orderly-plugin-submit` | README (optional), `usagePrompt` + confirm, `orderly-devkit submit` |
 
 Shared reference: [skills/_shared/orderly-plugin-reference.md](skills/_shared/orderly-plugin-reference.md).
+Plugin registry: [plugin-registry.json](plugin-registry.json).
 
 ## Install (Vercel [skills](https://github.com/vercel-labs/skills) CLI)
 

@@ -4,17 +4,12 @@ Reference for preparing and submitting an Orderly plugin to the Marketplace. Use
 
 ## `.orderly-manifest.json` Fields
 
-| Field | Required | Description |
-|:------|:---------|:------------|
-| `npmName` | Yes | npm package name (e.g. `@orderly.network/plugin-example`) |
-| `pluginId` | Yes | Stable ID (kebab-case), must match `registerPlugin` call |
-| `repoUrl` | Yes | HTTPS GitHub URL (e.g. `https://github.com/<owner>/<repo>`) |
-| `usagePrompt` | No (recommended) | Integration instructions (max 8192 chars) |
-| `tags` | No | Marketplace tags (max 5) |
-| `storybookUrl` | No | Storybook preview URL |
-| `storybookTooltip` | No | Tooltip text shown with Storybook link |
-| `coverImages` | No | Up to 10 items; each must be absolute URL or `/uploads/...` path |
-| `updatedAt` | Auto | ISO timestamp, set on each update |
+Use the canonical manifest constraints from:
+- [shared manifest constraints](../_shared/orderly-plugin-reference.md#manifest-constraints)
+
+Submission-specific additions:
+- `storybookUrl` (optional)
+- `storybookTooltip` (optional)
 
 ## Valid Tags
 
