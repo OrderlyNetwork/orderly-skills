@@ -24,9 +24,9 @@ These are derived internally by the CLI — not passed as flags:
 | Variable | Format | Example |
 |----------|--------|---------|
 | `pluginName` | PascalCase | `BuySellButtons` |
-| `pluginId` | kebab-case or custom | `buy-sell-buttons` |
+| `pluginId` | same as Marketplace API & `registerPlugin({ id })` (`/^[a-zA-Z][a-zA-Z0-9-]*$/`) | `buy-sell-buttons` |
 | `npmName` | kebab-case | `buy-sell-buttons` |
-| `pluginIdCamel` | camelCase | `buySellButtons` |
+| `pluginIdCamel` | camelCase identifier **only for generated JS symbols** (vars/exports), not the plugin id string | `buySellButtons` |
 | `version` | Semver | `1.0.0` |
 
 ## Generated Plugin Structure

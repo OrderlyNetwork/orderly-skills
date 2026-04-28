@@ -9,17 +9,13 @@ Canonical shared reference for Orderly plugin skills. Keep this file as the sing
 - Format: PascalCase (for example `BuySellButtons`)
 - Validation regex: `/^[A-Z][A-Za-z0-9]*$/`
 
-### Plugin ID (`--id`)
+### Plugin ID (`--id`, manifest, and `registerPlugin({ id })`)
 
-- Format: kebab-case or custom alphanumeric with hyphens
-- Validation regex: `/^[a-zA-Z][a-zA-Z0-9-]*$/`
-- Default: `toKebabCase(pluginName)` when omitted
+Use the **Marketplace API** rule everywhere the string identifies the plugin (CLI flag, `.orderly-manifest.json` `pluginId`, and `SDK.registerPlugin({ id })` in `plugin.tsx`). Do not use a separate “runtime camelCase” regex.
 
-### RegisterPlugin ID (runtime)
-
-- Format: camelCase-like identifier
-- Validation regex: `/^[a-zA-Z][a-zA-Z0-9]*$/`
-- Example: `myPlugin`, `pnlWidget`
+- Format: letter first, then letters, digits, or hyphens (kebab-case is typical, e.g. `orderly-onramp`)
+- Validation regex (aligned with server `PLUGIN_ID_REGEX`): `/^[a-zA-Z][a-zA-Z0-9-]*$/`
+- Default when scaffolding: `toKebabCase(pluginName)` when `--id` omitted
 
 ## Interceptor Targets
 
@@ -52,7 +48,7 @@ Use the Inspector tool in dev mode to discover additional target paths. Keep thi
 `.orderly-manifest.json` common fields:
 
 - `npmName` (required)
-- `pluginId` (required)
+- `pluginId` (required) — same pattern as API: `/^[a-zA-Z][a-zA-Z0-9-]*$/`
 - `repoUrl` (required, HTTPS GitHub URL)
 - `usagePrompt` (optional, max 8192 chars, recommended)
 - `tags` (optional, max 5)

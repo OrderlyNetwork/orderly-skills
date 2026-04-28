@@ -13,3 +13,7 @@ Use the canonical list:
 - [shared interceptor targets](../_shared/orderly-plugin-reference.md#interceptor-targets)
 
 Use the Inspector tool in dev mode to discover all available target paths.
+
+## Plugin ID string
+
+Use the same `pluginId` rule as the Marketplace API for `registerPlugin({ id })` and `.orderly-manifest.json` — see [shared naming conventions](../_shared/orderly-plugin-reference.md#naming-conventions).

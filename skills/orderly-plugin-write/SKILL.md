@@ -62,7 +62,7 @@ A plugin exports a **registration function**:
 export function registerMyPlugin(options = {}) {
   return (SDK: OrderlySDK) => {
     SDK.registerPlugin({
-      id: "myPlugin",
+      id: "my-plugin",
       name: "My Plugin",
       version: "1.0.0",
       orderlyVersion: ">=3.0.0",
@@ -271,12 +271,15 @@ component: (Original, props, api) => (
 )
 ```
 
-### Plugin ID Format
+### Plugin ID format (single rule)
 
-| Where | Format | Example |
-|-------|--------|---------|
-| `registerPlugin({ id: '...' })` | `/^[a-zA-Z][a-zA-Z0-9]*$/` (camelCase) | `myPlugin`, `pnlWidget` |
-| CLI `--id` flag | npm-compliant (kebab-case) | `pnl-widget`, `buy-sell-buttons` |
+Must match the **Marketplace API** wherever the plugin id appears (manifest `pluginId`, `registerPlugin({ id })`, CLI `--id`):
+
+| Rule | Regex | Examples |
+|------|--------|---------|
+| Letter first; then letters, digits, hyphens only | `/^[a-zA-Z][a-zA-Z0-9-]*$/` | `my-plugin`, `orderly-onramp`, `pnlWidget` |
+
+Do **not** treat `registerPlugin({ id })` as a separate camelCase-only rule — hyphenated ids are valid if they match the regex above.
 
 ## Lifecycle Hooks (Full Example)
 
@@ -284,7 +287,7 @@ component: (Original, props, api) => (
 export default function registerMyPlugin(options?: { theme?: string }) {
   return (SDK: OrderlySDK, state?: { orderlyVersion?: string }) =>
     SDK.registerPlugin({
-      id: "myPlugin",
+      id: "my-plugin",
       name: "My Plugin",
       version: "1.0.0",
 

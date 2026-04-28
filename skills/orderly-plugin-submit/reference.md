@@ -111,7 +111,7 @@ orderly-devkit submit --path . [--tags "UI,Trading"] [--storybook-url "https://.
 Notes from current CLI:
 - `--tags` invalid values are warned and dropped (valid values only are kept).
 - `.orderly-manifest.json` is optional for submit; CLI can resolve from `package.json` + git remote, then prompt for missing `pluginId`.
-- Validation checks include npm name format, GitHub repo URL format, pluginId regex, max tags, coverImages constraints, and usagePrompt max length.
+- Validation checks include npm name format, GitHub repo URL format, `pluginId` (**Marketplace API**: `/^[a-zA-Z][a-zA-Z0-9-]*$/`, same as `.orderly-manifest.json` and `registerPlugin({ id })`), max tags, coverImages constraints, and usagePrompt max length.
 
 ## Submit API Response
 
